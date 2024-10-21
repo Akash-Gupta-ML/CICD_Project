@@ -1,22 +1,13 @@
 pipeline {
     agent any
     stages {
-        stage('Clone') {
+        stage('Git Checkout') {
             steps {
                 script {
-                    def repoUrl = 'https://github.com/Akash-Gupta-ML/CICD_Project.git'
-                    def repoDir = 'CICD_Project'
-                    
-                    // Check if the directory already exists
-                    if (fileExists(repoDir)) {
-                        // If it exists, pull the latest changes
-                        dir(repoDir) {
-                            sh 'git pull origin main'
-                        }
-                    } else {
-                        // If it doesn't exist, clone the repository
-                        sh "git clone ${repoUrl}"
-                    }
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: '*/main']], 
+                        userRemoteConfigs: [[url: 'https://github.com/Akash-Gupta-ML/CICD_Project.git']]
+                    ])
                 }
             }
         }
