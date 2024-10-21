@@ -24,9 +24,7 @@ pipeline {
             steps {
                 script {
                     // Remove unused images
-                    sh "docker image prune -f"
-                    // Optionally, remove images older than a certain period
-                    sh "docker image prune -af --filter 'until=24h'"
+                    sh "docker image prune -af"
                 }
             }
         }
