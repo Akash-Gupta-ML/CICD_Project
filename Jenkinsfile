@@ -47,6 +47,7 @@ pipeline {
                     def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
                     // Update the image tag in your deployment YAML
                     sh "sed -i 's|image: akashgupta0408/weather-app:.*|image: ${imageTag}|g' kubernetes/deploy.yml"
+                    sh 'kubectl config use-context kind-kind'
                     sh 'kubectl apply -f kubernetes/deploy.yml'
                     sh 'kubectl apply -f kubernetes/service.yml'
                     // Rollout the deployment
