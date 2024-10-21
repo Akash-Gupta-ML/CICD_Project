@@ -11,14 +11,6 @@ pipeline {
                 }
             }
         }
-        stage('Remove Old Docker Images') {
-            steps {
-                script {
-                    // Remove unused images
-                    sh "docker image prune -af"
-                }
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 script {
@@ -37,6 +29,17 @@ pipeline {
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                         sh "docker push ${imageTag}:${env.BUILD_NUMBER}"
                     }
+                }
+            }
+        }
+        stage('Cleanup Old Docker Images') {
+            steps {
+                script {
+                    def imageTag = "akashgupta0408/weather-app"
+                    // Remove all images except the latest one
+                    sh """
+                        docker images ${imageTag} --format '{{.Tag}}' | grep -v ${env.BUILD_NUMBER} | xargs -r docker rmi -f
+                    """
                 }
             }
         }
