@@ -24,9 +24,9 @@ pipeline {
             steps {
                 script {
                     def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
-                    dir('CICD_Project')
+                    dir('CICD_Project'){
                     sh 'ls -l'
-                    sh "docker build -t ${imageTag} ."
+                    sh "docker build -t ${imageTag} ."}
                 }
             }
         }
