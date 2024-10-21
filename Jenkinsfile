@@ -34,16 +34,15 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    def imageTag = "akashgupta0408/weather-app"
-                    // Update the image tag in your deployment 
-                    sh "sed -i 's|image: akashgupta0408/weather-app:.*|image: ${imageTag}:${env.BUILD_NUMBER}|g' kubernetes/deploy.yml"
-                    sh 'kubectl config use-context kind-kind'
-                    sh 'kubectl apply -f kubernetes/deploy.yml'
-                    sh 'kubectl apply -f kubernetes/service.yml'
-                    // Rollout the deployment
-                    sh 'kubectl rollout status deployment/weather-app'
-                    sh 'sudo -u jenkins kubectl port-forward svc/weather-app 31224:80 --address 0.0.0.0 &'
-                }
+            def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
+            // Update the deployment with the new image
+            sh "kubectl set image deployment/weather-app weather-app=${imageTag}"
+            sh 'kubectl config use-context kind-kind'
+            sh 'kubectl apply -f kubernetes/service.yml'
+            // Rollout the deployment
+            sh 'kubectl rollout status deployment/weather-app'
+            sh 'sudo -u jenkins kubectl port-forward svc/weather-app 31224:80 --address 0.0.0.0 &'
+        }
             }
         }
     }
