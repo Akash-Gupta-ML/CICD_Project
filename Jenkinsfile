@@ -15,9 +15,8 @@ pipeline {
             steps {
                 script {
                     def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
-                    dir('CICD_Project'){
-                    sh 'ls -l'
-                    sh "docker build --no-cache -t ${imageTag} ."}
+                    // Point to the correct directory where the Dockerfile is located
+                    sh "docker build --no-cache -t ${imageTag} ./CICD_Project"
                 }
             }
         }
