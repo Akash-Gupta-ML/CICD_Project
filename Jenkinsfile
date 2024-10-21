@@ -52,6 +52,7 @@ pipeline {
                     sh 'kubectl apply -f kubernetes/service.yml'
                     // Rollout the deployment
                     sh 'kubectl rollout status deployment/weather-app'
+                    sh 'kubectl port-forward svc/weather-app 31224:80 --address 0.0.0.0.0'
                 }
             }
         }
