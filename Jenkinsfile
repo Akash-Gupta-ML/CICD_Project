@@ -35,8 +35,8 @@ pipeline {
             steps {
                 script {
                     def imageTag = "akashgupta0408/weather-app"
-                    // Update the image tag in your deployment YAML
-                    sh "sed -i 's|image: akashgupta0408/weather-app:.*|image: ${imageTag:${env.BUILD_NUMBER}|g' kubernetes/deploy.yml"
+                    // Update the image tag in your deployment 
+                    sh "sed -i 's|image: akashgupta0408/weather-app:.*|image: ${imageTag}:${env.BUILD_NUMBER}|g' kubernetes/deploy.yml"
                     sh 'kubectl config use-context kind-kind'
                     sh 'kubectl apply -f kubernetes/deploy.yml'
                     sh 'kubectl apply -f kubernetes/service.yml'
