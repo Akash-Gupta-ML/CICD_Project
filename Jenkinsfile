@@ -14,9 +14,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
+                    def imageTag = "akashgupta0408/weather-app"
                     // Point to the correct directory where the Dockerfile is located
-                    sh "docker build --no-cache -t ${imageTag} ."
+                    sh "docker build -t ${imageTag}:${env.BUILD_NUMBER} ."
                 }
             }
         }
@@ -26,7 +26,7 @@ pipeline {
                     def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                        sh "docker push ${imageTag}"
+                        sh "docker push ${imageTag}:${env.BUILD_NUMBER}"
                     }
                 }
             }
@@ -34,9 +34,9 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
+                    def imageTag = "akashgupta0408/weather-app"
                     // Update the image tag in your deployment YAML
-                    sh "sed -i 's|image: akashgupta0408/weather-app:.*|image: ${imageTag}|g' kubernetes/deploy.yml"
+                    sh "sed -i 's|image: akashgupta0408/weather-app:.*|image: ${imageTag:${env.BUILD_NUMBER}}|g' kubernetes/deploy.yml"
                     sh 'kubectl config use-context kind-kind'
                     sh 'kubectl apply -f kubernetes/deploy.yml'
                     sh 'kubectl apply -f kubernetes/service.yml'
