@@ -3,16 +3,21 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                def repoDir = 'CICD_Project'
+                script {
+                    def repoUrl = 'https://github.com/Akash-Gupta-ML/CICD_Project.git'
+                    def repoDir = 'CICD_Project'
                     
                     // Check if the directory already exists
                     if (fileExists(repoDir)) {
                         // If it exists, pull the latest changes
                         dir(repoDir) {
-                            sh 'git pull origin main'
+                            sh 'git pull origin master'
                         }
                     } else {
-                            sh 'git clone https://github.com/Akash-Gupta-ML/CICD_Project.git'}
+                        // If it doesn't exist, clone the repository
+                        sh "git clone ${repoUrl}"
+                    }
+                }
             }
         }
         stage('Build Docker Image') {
