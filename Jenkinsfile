@@ -23,7 +23,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
+                    def imageTag = "akashgupta0408/weather-app"
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                         sh "docker push ${imageTag}:${env.BUILD_NUMBER}"
