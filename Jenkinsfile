@@ -46,9 +46,9 @@ pipeline {
                 script {
                     def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
                     // Update the image tag in your deployment YAML
-                    sh "sed -i 's|image: akashgupta0408/weather-app:.*|image: ${imageTag}|g' deploy.yml"
-                    sh 'kubectl apply -f deploy.yml'
-                    sh 'kubectl apply -f service.yml'
+                    sh "sed -i 's|image: akashgupta0408/weather-app:.*|image: ${imageTag}|g' kubernetes/deploy.yml"
+                    sh 'kubectl apply -f kubernetes/deploy.yml'
+                    sh 'kubectl apply -f kubernetes/service.yml'
                     // Rollout the deployment
                     sh 'kubectl rollout status deployment/weather-app'
                 }
