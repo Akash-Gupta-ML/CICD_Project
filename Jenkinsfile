@@ -1,67 +1,53 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKER_IMAGE = 'akashgupta0408/weather-app' // Your Docker Hub image
-        DOCKER_CREDENTIALS = credentials('docker-credentials') // Docker credentials ID
-        AWS_CREDENTIALS = credentials('aws-credentials') // AWS credentials ID
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Clone') {
             steps {
-                script {
-                    // Checkout code from the repository
-                    checkout([$class: 'GitSCM', 
-                        branches: [[name: '*/main']], 
-                        userRemoteConfigs: [[url: 'https://github.com/Akash-Gupta-ML/Python-Project.git']]
-                    ])
-                }
+                def repoDir = 'CICD_Project'
+                    
+                    // Check if the directory already exists
+                    if (fileExists(repoDir)) {
+                        // If it exists, pull the latest changes
+                        dir(repoDir) {
+                            sh 'git pull origin main'
+                        }
+                    } else {
+                            sh 'git clone https://github.com/Akash-Gupta-ML/CICD_Project.git'}
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image using the Jenkins build number
-                    sh "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} -f weather_app/Dockerfile weather_app"
+                    def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
+                    dir('CICD_Project')
+                    sh 'ls -l'
+                    sh "docker build -t ${imageTag} ."
                 }
             }
         }
-
-        stage('Push Docker Image') {
+        stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Log in to Docker Hub
+                    def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
-                        // Push the image to Docker Hub
-                        sh "docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}" // Use double quotes for variable interpolation
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        sh "docker push ${imageTag}"
                     }
                 }
             }
         }
-    
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Set the Kubernetes context (if necessary)
-                    sh 'kubectl config use-context akash@test.us-east-1.eksctl.io'
-                    sh 'sudo -u jenkins kubectl get pods --kubeconfig=/home/akash/.kube/config'
-                    
-                    // Update the Kubernetes deployment with the new image
-                    sh "sudo -u jenkins kubectl set image deployment/weather-app weather-app=${DOCKER_IMAGE}:${env.BUILD_NUMBER} --record --kubeconfig=/home/akash/.kube/config"
+                    def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
+                    // Update the image tag in your deployment YAML
+                    sh "sed -i 's|image: akashgupta0408/weather-app:.*|image: ${imageTag}|g' deployment.yaml"
+                    sh 'kubectl apply -f deploy.yaml'
+                    sh 'kubectl apply -f service.yaml'
+                    // Rollout the deployment
+                    sh 'kubectl rollout status deployment/weather-app'
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed. Check the logs for details.'
         }
     }
 }
