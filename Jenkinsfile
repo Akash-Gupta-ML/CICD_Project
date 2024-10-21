@@ -52,8 +52,7 @@ pipeline {
                     sh 'kubectl apply -f kubernetes/service.yml'
                     // Rollout the deployment
                     sh 'kubectl rollout status deployment/weather-app'
-                    def nodePort = sh(script: "kubectl get svc weather-app -o jsonpath='{.spec.ports[0].nodePort}'", returnStdout: true).trim()
-                    sh 'kubectl port-forward svc/weather-app ${nodePort}:80 --address 0.0.0.0'
+                    sh 'nohup kubectl port-forward svc/weather-app 31224:80 --address 0.0.0.0 > port-forward.log 2>&1 &'
                 }
             }
         }
