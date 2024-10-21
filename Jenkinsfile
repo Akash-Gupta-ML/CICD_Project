@@ -20,6 +20,16 @@ pipeline {
                 }
             }
         }
+        stage('Remove Old Docker Images') {
+            steps {
+                script {
+                    // Remove unused images
+                    sh "docker image prune -f"
+                    // Optionally, remove images older than a certain period
+                    sh "docker image prune -af --filter 'until=24h'"
+                }
+            }
+        }
         stage('Push to Docker Hub') {
             steps {
                 script {
@@ -28,20 +38,6 @@ pipeline {
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                         sh "docker push ${imageTag}:${env.BUILD_NUMBER}"
                     }
-                }
-            }
-        }
-        stage('Clean Up Old Images') {
-            steps {
-                script {
-                    // This command will remove all images that are not tagged and are older than a certain threshold.
-                    sh """
-                        # Remove all untagged images
-                        docker rmi \$(docker images --filter "dangling=true" -q) || true
-
-                        # Optional: Remove images older than 5 minutes
-                        # docker image prune -f --filter 'until=5m'
-                    """
                 }
             }
         }
