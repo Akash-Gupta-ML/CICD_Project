@@ -31,6 +31,20 @@ pipeline {
                 }
             }
         }
+        stage('Clean Up Old Images') {
+            steps {
+                script {
+                    // This command will remove all images that are not tagged and are older than a certain threshold.
+                    sh """
+                        # Remove all untagged images
+                        docker rmi \$(docker images --filter "dangling=true" -q) || true
+
+                        # Optional: Remove images older than 5 minutes
+                        # docker image prune -f --filter 'until=5m'
+                    """
+                }
+            }
+        }
         stage('Deploy to Kubernetes') {
             steps {
                 script {
