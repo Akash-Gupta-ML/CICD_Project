@@ -11,6 +11,14 @@ pipeline {
                 }
             }
         }
+        stage('Remove Old Docker Images') {
+            steps {
+                script {
+                    // Remove unused images
+                    sh "docker image prune -af"
+                }
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 script {
@@ -20,14 +28,7 @@ pipeline {
                 }
             }
         }
-        stage('Remove Old Docker Images') {
-            steps {
-                script {
-                    // Remove unused images
-                    sh "docker image prune -af"
-                }
-            }
-        }
+        
         stage('Push to Docker Hub') {
             steps {
                 script {
