@@ -49,26 +49,6 @@ pipeline {
         }
             }
         }
-    stage('Deploy Prometheus') {
-            steps {
-                script {
-                    sh 'kubectl create namespace monitoring || true'
-                    sh 'helm repo add prometheus-community https://prometheus-community.github.io/helm-charts'
-                    sh 'helm repo update'
-                    sh 'helm install prometheus prometheus-community/prometheus --namespace monitoring'
-                }
-            }
-        }
-        stage('Deploy Grafana') {
-            steps {
-                script {
-                    sh 'helm install grafana grafana/grafana --namespace monitoring'
-                    // Port-forward Grafana for local access (optional)
-                    sh 'kubectl port-forward service/grafana 30000:80 --namespace monitoring &'
-                }
-            }
-        }
-    }
         post {
         success {
             script {
