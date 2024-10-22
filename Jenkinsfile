@@ -53,8 +53,8 @@ pipeline {
         stage('Monitoring') {
             steps {
                 script {
-            sh 'sudo -u jenkins kubectl port-forward svc/prometheus 9090:9090 --address 0.0.0.0 &'
-            sh 'sudo -u jenkins kubectl port-forward svc/grafana 3000:3000 --address 0.0.0.0 &'
+            sh 'kubectl port-forward svc/prometheus 9090:9090 --address 0.0.0.0 &'
+            sh 'kubectl port-forward svc/grafana 3000:3000 --address 0.0.0.0 &'
             echo "Promotheus Accessible on <VM-ip:9090>"
             echo "Grafana Accessible on <VM-ip:3000>"
         }
