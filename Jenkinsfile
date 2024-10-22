@@ -59,7 +59,7 @@ pipeline {
                         Build succeeded for ${env.JOB_NAME} - ${env.BUILD_NUMBER} \n
                         Check console output at ${env.BUILD_URL} to view the results.
                     """,
-                    to: ${EMAIL_RECIPIENTS}
+                    to: EMAIL_RECIPIENTS
                 )
             }
         }
@@ -71,7 +71,7 @@ pipeline {
                         Build failed for ${env.JOB_NAME} - ${env.BUILD_NUMBER} \n
                         Check console output at ${env.BUILD_URL} to view the results.
                     """,
-                    to: ${EMAIL_RECIPIENTS}
+                    to: EMAIL_RECIPIENTS
                 )
             }
         }
