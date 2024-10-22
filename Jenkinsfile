@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'docker-credentials'
         IMAGE_TAG = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
-        EMAIL_RECIPIENTS = 'akashguptaking04@gmail.com' // Replace with your email
+        EMAIL_RECIPIENTS = 'akashguptaking04' // Replace with your email
     }
     stages {
         stage('Git Checkout') {
