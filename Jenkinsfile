@@ -1,5 +1,10 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_CREDENTIALS_ID = 'docker-credentials'
+        IMAGE_TAG = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
+        EMAIL_RECIPIENTS = 'akashguptaking04@gmail.com' // Replace with your email
+    }
     stages {
         stage('Git Checkout') {
             steps {
@@ -16,7 +21,7 @@ pipeline {
                 script {
                     def imageTag = "akashgupta0408/weather-app"
                     // Point to the correct directory where the Dockerfile is located
-                    sh "docker build -t ${imageTag}:${env.BUILD_NUMBER} ."
+                    sh "docker build -t ${IMAGE_TAG} ."
                 }
             }
         }
@@ -24,10 +29,9 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    def imageTag = "akashgupta0408/weather-app"
-                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                   withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                        sh "docker push ${imageTag}:${env.BUILD_NUMBER}"
+                        sh "docker push ${IMAGE_TAG}"
                     }
                 }
             }
@@ -35,9 +39,8 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-            def imageTag = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
             // Update the deployment with the new image
-            sh "kubectl set image deployment/weather-app weather-app=${imageTag}"
+            sh "kubectl set image deployment/weather-app weather-app=${IMAGE_TAG}"
             sh 'kubectl config use-context kind-kind'
             sh 'kubectl apply -f kubernetes/service.yml'
             // Rollout the deployment
@@ -45,6 +48,28 @@ pipeline {
             sh 'sudo -u jenkins kubectl port-forward svc/weather-app 31224:80 --address 0.0.0.0 &'
         }
             }
+        }
+        post {
+        success {
+            emailext (
+                subject: "Build Succeeded: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    Build succeeded for ${env.JOB_NAME} - ${env.BUILD_NUMBER} \n
+                    Check console output at ${env.BUILD_URL} to view the results.
+                """,
+                to: EMAIL_RECIPIENTS
+            )
+        }
+        failure {
+            emailext (
+                subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    Build failed for ${env.JOB_NAME} - ${env.BUILD_NUMBER} \n
+                    Check console output at ${env.BUILD_URL} to view the results.
+                """,
+                to: EMAIL_RECIPIENTS
+            )
+        }
         }
     }
 }
