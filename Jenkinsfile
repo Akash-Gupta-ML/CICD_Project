@@ -49,6 +49,7 @@ pipeline {
         }
             }
         }
+    }
         post {
         success {
             emailext (
@@ -69,7 +70,6 @@ pipeline {
                 """,
                 to: EMAIL_RECIPIENTS
             )
-        }
         }
     }
 }
