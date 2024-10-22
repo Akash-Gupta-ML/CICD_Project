@@ -50,7 +50,7 @@ pipeline {
             }
         }
     }
-        post {
+       post {
         success {
             emailext (
                 subject: "Build Succeeded: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
