@@ -50,26 +50,30 @@ pipeline {
             }
         }
     }
-       post {
+        post {
         success {
-            emailext (
-                subject: "Build Succeeded: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                    Build succeeded for ${env.JOB_NAME} - ${env.BUILD_NUMBER} \n
-                    Check console output at ${env.BUILD_URL} to view the results.
-                """,
-                to: EMAIL_RECIPIENTS
-            )
+            script {
+                emailext (
+                    subject: "Build Succeeded: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                        Build succeeded for ${env.JOB_NAME} - ${env.BUILD_NUMBER} \n
+                        Check console output at ${env.BUILD_URL} to view the results.
+                    """,
+                    to: EMAIL_RECIPIENTS
+                )
+            }
         }
         failure {
-            emailext (
-                subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                    Build failed for ${env.JOB_NAME} - ${env.BUILD_NUMBER} \n
-                    Check console output at ${env.BUILD_URL} to view the results.
-                """,
-                to: EMAIL_RECIPIENTS
-            )
+            script {
+                emailext (
+                    subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """
+                        Build failed for ${env.JOB_NAME} - ${env.BUILD_NUMBER} \n
+                        Check console output at ${env.BUILD_URL} to view the results.
+                    """,
+                    to: EMAIL_RECIPIENTS
+                )
+            }
         }
     }
 }
