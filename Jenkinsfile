@@ -32,17 +32,6 @@ pipeline {
                 }
             }
         }
-        stage('Cleanup Old Docker Images') {
-            steps {
-                script {
-                    def imageTag = "akashgupta0408/weather-app"
-                    // Remove all images except the latest one
-                    sh """
-                        docker images ${imageTag} --format '{{.Tag}}' | grep -v ${env.BUILD_NUMBER} | xargs -r docker rmi -f
-                    """
-                }
-            }
-        }
         stage('Deploy to Kubernetes') {
             steps {
                 script {
