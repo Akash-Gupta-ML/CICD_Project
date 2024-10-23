@@ -53,6 +53,11 @@ pipeline {
         stage('Monitoring') {
             steps {
                 script {
+            sh 'kubectl apply -f prometheusConfig.yml
+            sh 'kubectl apply -f prometheusDeploy.yml
+            sh 'kubectl apply -f prometheusService.yml
+            sh 'kubectl apply -f grafanaDeploy.yml
+            sh 'kubectl apply -f grafanaService.yml
             sh 'sudo -u jenkins kubectl port-forward svc/prometheus 9090:9090 --address 0.0.0.0 -n monitoring &'
             sh 'sudo -u jenkins kubectl port-forward svc/grafana 3000:3000 --address 0.0.0.0 -n monitoring &'
             echo "Promotheus Accessible on <VM-ip:9090>"
