@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_CREDENTIALS_ID = 'docker-credential'
+        DOCKER_CREDENTIALS_ID = 'docker-credentials'
         IMAGE_TAG = "akashgupta0408/weather-app:${env.BUILD_NUMBER}"
         EMAIL_RECIPIENTS = 'akashguptaking04@gmail.com' 
     }
