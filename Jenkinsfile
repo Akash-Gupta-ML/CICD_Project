@@ -39,6 +39,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
+             sh 'kubectl apply -f kubernetes/deploy.yml'
             // Update the deployment with the new image
             sh "kubectl set image deployment/weather-app weather-app=${IMAGE_TAG}"
             sh 'kubectl config use-context kind-kind'
@@ -53,11 +54,11 @@ pipeline {
         stage('Monitoring') {
             steps {
                 script {
-            sh 'kubectl apply -f prometheusConfig.yml'
-            sh 'kubectl apply -f prometheusDeploy.yml'
-            sh 'kubectl apply -f prometheusService.yml'
-            sh 'kubectl apply -f grafanaDeploy.yml'
-            sh 'kubectl apply -f grafanaService.yml'
+            sh 'kubectl apply -f kubernetes/prometheusConfig.yml'
+            sh 'kubectl apply -f kubernetes/prometheusDeploy.yml'
+            sh 'kubectl apply -f kubernetes/prometheusService.yml'
+            sh 'kubectl apply -f kubernetes/grafanaDeploy.yml'
+            sh 'kubectl apply -f kubernetes/grafanaService.yml'
             sh 'sudo -u jenkins kubectl port-forward svc/prometheus 9090:9090 --address 0.0.0.0 -n monitoring &'
             sh 'sudo -u jenkins kubectl port-forward svc/grafana 3000:3000 --address 0.0.0.0 -n monitoring &'
             echo "Promotheus Accessible on <VM-ip:9090>"
