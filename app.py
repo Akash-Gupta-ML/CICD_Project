@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import requests
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 
 API_KEY = '0aa9e4c62edc0525abd44d283f00d4e0'
 
