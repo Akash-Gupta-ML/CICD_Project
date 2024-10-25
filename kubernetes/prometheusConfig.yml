@@ -11,5 +11,5 @@ data:
     scrape_configs:
       - job_name: 'weather-app'
         static_configs:
-          - targets: ['weather-app:80']  
+          - targets: ['192.168.1.39:31224']  
 
