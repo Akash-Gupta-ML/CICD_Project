@@ -20,10 +20,6 @@ def index():
                 weather_data = {"error": "City not found!"}
     return render_template('index.html', weather_data=weather_data)
 
-@app.route('/metrics')
-def metrics_view():
-    return metrics.export(), 200
-
 
 
 if __name__ == '__main__':
