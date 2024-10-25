@@ -4,9 +4,11 @@ metadata:
   name: prometheus
   namespace: monitoring
 spec:
+  type: NodePort
   ports:
     - port: 9090
-      targetPort: 9090 
+      targetPort: 9090
+      nodePort: 30000
   selector:
     app.kubernetes.io/name: prometheus
     app.kubernetes.io/instance: prometheus
